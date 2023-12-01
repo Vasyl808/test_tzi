@@ -101,8 +101,9 @@ class RC5:
 
     def encode_file(self, input_filename, output_filename):
         with open(input_filename, 'rb') as inp, open(output_filename, 'wb') as out:
+            start_time = time.time()
             run = True
-            init_vector = self.encode_block(int.from_bytes(self.init_vector(), byteorder='little'))
+            init_vector = self.init_vector()
             out.write(init_vector)
             encoded_text = init_vector
             while run:
@@ -120,7 +121,8 @@ class RC5:
                 text_int ^= encoded_text_int
                 encoded_text = self.encode_block(text_int)
                 out.write(encoded_text)
-        return True
+        end_time = time.time()
+        return f"File encrypted in {end_time - start_time:.5f} seconds."
 
     def decode_block(self, data):
         A = data >> self.w
@@ -134,6 +136,7 @@ class RC5:
 
     def decode_file(self, input_filename, output_filename):
         with open(input_filename, 'rb') as inp, open(output_filename, 'wb+') as out:
+            start_time = time.time()
             init_vector = inp.read(self.block_size)
             prev_encoded_text = init_vector
             run = True
@@ -144,10 +147,9 @@ class RC5:
                 if len(encoded_text) != self.block_size:
                     run = False
                 encoded_text_int = int.from_bytes(encoded_text, byteorder='little')
-                decoded_text_int = self.decode_block(encoded_text_int)
-                text_int = decoded_text_int ^ int.from_bytes(prev_encoded_text, byteorder='little')
+                text_int = self.decode_block(encoded_text_int) ^ int.from_bytes(prev_encoded_text, byteorder='little')
                 text = text_int.to_bytes(length=self.block_size, byteorder='little')
-                prev_encoded_text = encoded_text  # Update the previous ciphertext block
+                prev_encoded_text = encoded_text
                 #last_byte = text[-1]
                 #if last_byte <= len(text):
                 #    for byte in text[-last_byte:]:
@@ -156,7 +158,8 @@ class RC5:
                 #    else:
                 #        text = text[:-last_byte]
                 out.write(text)
-        return True
+        end_time = time.time()
+        return f"File decrypted in {end_time - start_time:.5f} seconds."
 
 #if __name__ == '__main__':
 #    key = input('Enter key: ')

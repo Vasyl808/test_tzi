@@ -13,7 +13,7 @@ class LoadingWindowBase(tk.Toplevel, ABC):
         super().__init__(parent)
         self.parent = parent
         self.title(title)
-        self.geometry("200x100")
+        self.geometry("250x100")
         self.label = tk.Label(self, text=task_text, font=("Helvetica", 12))
         self.label.pack(pady=20)
         self.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -109,8 +109,8 @@ class LoadingWindowHash(LoadingWindowBase):
 
 class CodeWindow(LoadingWindowBase):
     def __init__(self, parent, function, file_in, file_out, text):
-        def on_complete_callback():
-            self.label.config(text="Recording completed")
+        def on_complete_callback(result):
+            self.label.config(text=result)
         self.function = function
         self.file_in = file_in
         self.file_out = file_out
@@ -120,3 +120,39 @@ class CodeWindow(LoadingWindowBase):
     def execute_task(self):
         result = self.function(self.file_in, self.file_out)
         self.queue.put(result)
+
+    def on_task_complete(self):
+        try:
+            result = self.queue.get_nowait()
+            if result is not None:
+                self.on_complete_callback(result)
+            else:
+                self.label.config(text="Error during the task")
+        except queue.Empty:
+            self.parent.after(100, self.on_task_complete)
+
+
+class LoadingWindowRSA(LoadingWindowBase):
+    def __init__(self, parent, function, text, encrypted_filename, public_key_path, file_to_encrypt_path):
+        def on_complete_callback(result):
+            self.label.config(text=result)
+        self.text = text
+        self.function = function
+        self.encrypted_filename = encrypted_filename
+        self.file_to_encrypt_path = file_to_encrypt_path
+        self.public_key_path = public_key_path
+        super().__init__(parent, "Wait", self.text, on_complete_callback)
+
+    def execute_task(self):
+        result = self.function(self.encrypted_filename, self.public_key_path, self. file_to_encrypt_path)
+        self.queue.put(result)
+
+    def on_task_complete(self):
+        try:
+            result = self.queue.get_nowait()
+            if result is not None:
+                self.on_complete_callback(result)
+            else:
+                self.label.config(text="Error during the task")
+        except queue.Empty:
+            self.parent.after(100, self.on_task_complete)

@@ -4,6 +4,9 @@ from main_page import MainAppPage
 from md5_app import HashApp, StringHashPage, FileHashPage, VerifyIntegrityPage
 from number_generator_app import NumberGeneratorApp
 from rc5_app import RC5App, EncodePage, DecodePage
+from rsa_app import RSAApp, EncryptionPage, DecryptionPage
+from dss_app import DSSApp, FileSignaturePage, MessageSignaturePage, SignMessagePage, SignFilePage, MessageVerifyPage,\
+    FileVerifyPage
 
 
 class App(tk.Tk):
@@ -20,7 +23,8 @@ class App(tk.Tk):
         self.frames = {}
 
         for F in (MainAppPage, NumberGeneratorApp, HashApp, StringHashPage, FileHashPage, VerifyIntegrityPage,
-                  RC5App, EncodePage, DecodePage):
+                  RC5App, EncodePage, DecodePage, RSAApp, EncryptionPage, DecryptionPage, DSSApp, FileSignaturePage,
+                  MessageSignaturePage, SignMessagePage, SignFilePage, FileVerifyPage, MessageVerifyPage):
             frame = F(self.container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")

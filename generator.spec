@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['generator.py', 'write_to_file.py', 'loading_window.py', 'md5.py', 'main.py', 'rc5_app.py', 'md5_app.py', 'number_generator_app.py', 'main_page.py', 'rc5.py'],
+    ['generator.py', 'write_to_file.py', 'loading_window.py', 'md5.py', 'main.py', 'rc5_app.py', 'md5_app.py', 'number_generator_app.py', 'main_page.py', 'rc5.py', 'rsa.py', 'rsa_app.py'],
     pathex=[],
     binaries=[],
     datas=[('config.json', '.')],
